@@ -167,17 +167,3 @@ class EasyControlGenerate:
         
         return (image,)
 
-# 注册节点
-NODE_CLASS_MAPPINGS = {
-    "EasyControlLoadFlux": EasyControlLoadFlux,
-    "EasyControlLoadLora": EasyControlLoadLora,
-    "EasyControlLoadMultiLora": EasyControlLoadMultiLora,
-    "EasyControlGenerate": EasyControlGenerate,
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyControlLoadFlux": "Load EasyControl Flux Model",
-    "EasyControlLoadLora": "Load EasyControl Lora",
-    "EasyControlLoadMultiLora": "Load Multiple EasyControl Loras",
-    "EasyControlGenerate": "EasyControl Generate",
-} 
