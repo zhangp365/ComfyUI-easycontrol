@@ -1,8 +1,11 @@
 
 
+
 # ComfyUI EasyControl Nodes
 
 ComfyUI EasyControl Nodes is a collection of nodes for ComfyUI that allows you to load and use EasyControl models.
+
+https://github.com/Xiaojiu-z/EasyControl comfyui
 
 need 40GB VRAM to run.
 
@@ -15,6 +18,12 @@ https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
 
 
 ![show](./asset/show.png)
+
+# online run:
+
+[https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate](https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate)
+
+
 
 
 https://www.comfyonline.app
