@@ -198,11 +198,14 @@ class EasyControlGenerate:
             cond_size=cond_size,
         )
         
-        # Convert PIL image to numpy array
+        # Convert PIL image to numpy array, then to torch.Tensor
         if isinstance(output, FluxPipelineOutput):
             image = np.array(output.images[0]) / 255.0
         else:
             image = np.array(output[0]) / 255.0
+        
+        # Convert numpy array to torch.Tensor
+        image = torch.from_numpy(image).float()
         
         # Clear cache after generation
         for name, attn_processor in transformer.attn_processors.items():
