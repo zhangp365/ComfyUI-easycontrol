@@ -32,8 +32,9 @@ class EasyControlLoadFlux:
         login(token=hf_token)
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        cache_dir = folder_paths.folder_names_and_paths["diffusers"]
-        pipe = FluxPipeline.from_pretrained(base_path, torch_dtype=torch.bfloat16, device=device)
+        cache_dir = folder_paths.get_folder_paths("diffusers")[0]
+        print(cache_dir)
+        pipe = FluxPipeline.from_pretrained(base_path, torch_dtype=torch.bfloat16, device=device, cache_dir=cache_dir)
         transformer = FluxTransformer2DModel.from_pretrained(
             base_path, 
             subfolder="transformer",
