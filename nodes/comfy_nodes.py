@@ -150,6 +150,12 @@ class EasyControlGenerate:
         # Set prompt_2 to None if empty
         if not prompt_2:
             prompt_2 = None
+
+        print("spatial_images")
+        print(spatial_images)
+
+        print("subject_images")
+        print(subject_images)
         
         # Generate image
         output = pipe(
