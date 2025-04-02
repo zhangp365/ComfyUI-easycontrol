@@ -131,19 +131,45 @@ class EasyControlGenerate:
         for name, attn_processor in transformer.attn_processors.items():
             attn_processor.bank_kv.clear()
         
+        
         # Prepare spatial images
         spatial_images = []
+        print("spatial_image")
+        print(spatial_image)
+        
         if spatial_image is not None:
-            # Convert from numpy to PIL
-            if isinstance(spatial_image, np.ndarray):
+            # Convert from tensor or numpy to PIL
+            if isinstance(spatial_image, torch.Tensor):
+                # Handle single image or batch
+                if spatial_image.dim() == 4:  # [batch, height, width, channels]
+                    for i in range(spatial_image.shape[0]):
+                        img = spatial_image[i].cpu().numpy()
+                        spatial_image_pil = Image.fromarray((img * 255).astype(np.uint8))
+                        spatial_images.append(spatial_image_pil)
+                else:  # [height, width, channels]
+                    img = spatial_image.cpu().numpy()
+                    spatial_image_pil = Image.fromarray((img * 255).astype(np.uint8))
+                    spatial_images.append(spatial_image_pil)
+            elif isinstance(spatial_image, np.ndarray):
                 spatial_image_pil = Image.fromarray((spatial_image * 255).astype(np.uint8))
                 spatial_images.append(spatial_image_pil)
         
         # Prepare subject images
         subject_images = []
         if subject_image is not None:
-            # Convert from numpy to PIL
-            if isinstance(subject_image, np.ndarray):
+            # Convert from tensor or numpy to PIL
+            if isinstance(subject_image, torch.Tensor):
+                # Handle single image or batch
+                if subject_image.dim() == 4:  # [batch, height, width, channels]
+                    for i in range(subject_image.shape[0]):
+                        img = subject_image[i].cpu().numpy()
+                        subject_image_pil = Image.fromarray((img * 255).astype(np.uint8))
+                        subject_images.append(subject_image_pil)
+                else:  # [height, width, channels]
+                    img = subject_image.cpu().numpy()
+                    subject_image_pil = Image.fromarray((img * 255).astype(np.uint8))
+                    subject_images.append(subject_image_pil)
+            elif isinstance(subject_image, np.ndarray):
                 subject_image_pil = Image.fromarray((subject_image * 255).astype(np.uint8))
                 subject_images.append(subject_image_pil)
         
