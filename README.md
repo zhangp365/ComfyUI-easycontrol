@@ -1,10 +1,20 @@
-# WIP
+
 
 # ComfyUI EasyControl Nodes
 
 ComfyUI EasyControl Nodes is a collection of nodes for ComfyUI that allows you to load and use EasyControl models.
 
+need 40GB VRAM to run.
 
+autodownload flux model (need 50GB disk space)
+
+lora need download to models/loras
+
+support lora list:
+https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
+
+
+![show](./asset/show.png)
 
 
 https://www.comfyonline.app
