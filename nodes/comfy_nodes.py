@@ -24,7 +24,7 @@ class EasyControlLoadFlux:
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, model_name):
+    def load_model(self):
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         
