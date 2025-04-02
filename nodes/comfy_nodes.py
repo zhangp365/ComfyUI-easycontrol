@@ -52,7 +52,7 @@ class EasyControlLoadLora:
         return {
             "required": {
                 "transformer": ("EASYCONTROL_TRANSFORMER", ),
-                "lora_name": (folder_paths.get_filename_list("loras") ),
+                "lora_name": (folder_paths.get_filename_list("loras"), ),
                 "lora_weight": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.01}),
                 "cond_size": ("INT", {"default": 512, "min": 256, "max": 1024, "step": 64}),
             },
