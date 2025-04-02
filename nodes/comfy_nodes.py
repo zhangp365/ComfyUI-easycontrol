@@ -207,6 +207,10 @@ class EasyControlGenerate:
         # Convert numpy array to torch.Tensor
         image = torch.from_numpy(image).float()
         
+        # Add batch dimension to make it [batch, height, width, channels]
+        if image.dim() == 3:  # [height, width, channels]
+            image = image.unsqueeze(0)  # Add batch dimension to make it [1, height, width, channels]
+        
         # Clear cache after generation
         for name, attn_processor in transformer.attn_processors.items():
             attn_processor.bank_kv.clear()
