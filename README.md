@@ -1,10 +1,9 @@
-#WIP
+# WIP
 
 # ComfyUI EasyControl Nodes
 
 ComfyUI EasyControl Nodes is a collection of nodes for ComfyUI that allows you to load and use EasyControl models.
 
-## Installation
 
 
 
