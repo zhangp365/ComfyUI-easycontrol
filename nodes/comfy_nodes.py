@@ -8,114 +8,33 @@ from diffusers.pipelines.flux.pipeline_output import FluxPipelineOutput
 from easycontrol.pipeline import FluxPipeline
 from easycontrol.transformer_flux import FluxTransformer2DModel
 from easycontrol.lora_helper import set_single_lora, set_multi_lora, unset_lora
-from diffusers import (
-    AutoencoderKL,
-    FlowMatchEulerDiscreteScheduler,
-)
-from transformers import (
-    T5EncoderModel,
-    T5Tokenizer,
-    CLIPTextModel,
-    CLIPTokenizer,
-)
 
 class EasyControlLoadFlux:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
-                "transformer_model": (folder_paths.get_filename_list("diffusion_models"), ),
-                "t5_model": (folder_paths.get_filename_list("clip"), ),
-                "clip_model": (folder_paths.get_filename_list("clip"), ),
-            },
+
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, transformer_model, t5_model, clip_model):
-        # Get full paths for each model component
-        transformer_path = folder_paths.get_full_path("diffusion_models", transformer_model)
-        t5_path = folder_paths.get_full_path("clip", t5_model)
-        clip_path = folder_paths.get_full_path("clip", clip_model)
-        
+    def load_model(self, model_name):
+        base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        torch_dtype = torch.bfloat16 if device == "cuda" else torch.float32
         
-        try:
-            # Load tokenizers
-            tokenizer = CLIPTokenizer.from_pretrained(
-                clip_path,
-                local_files_only=True
-            )
-            tokenizer_2 = T5Tokenizer.from_pretrained(
-                t5_path,
-                local_files_only=True
-            )
-            
-            # Load text encoders
-            text_encoder = CLIPTextModel.from_pretrained(
-                clip_path,
-                torch_dtype=torch_dtype,
-                local_files_only=True
-            )
-            text_encoder_2 = T5EncoderModel.from_pretrained(
-                t5_path,
-                torch_dtype=torch_dtype,
-                local_files_only=True
-            )
-            
-            # Load VAE (assumed to be in the transformer model directory)
-            vae = AutoencoderKL.from_pretrained(
-                transformer_path,
-                subfolder="vae",
-                torch_dtype=torch_dtype,
-                local_files_only=True
-            )
-            
-            # Load flux transformer model
-            transformer = FluxTransformer2DModel.from_pretrained(
-                transformer_path,
-                subfolder="transformer",
-                torch_dtype=torch_dtype,
-                local_files_only=True
-            )
-            
-            # Load scheduler
-            try:
-                scheduler = FlowMatchEulerDiscreteScheduler(
-                    num_train_timesteps=1000,
-                    shift=3.0,
-                    use_dynamic_shifting=True,
-                    base_image_seq_len=256,
-                    max_image_seq_len=4096,
-                    base_shift=0.5,
-                    max_shift=1.15
-                )
-                print("Scheduler load success")
-            except Exception as e:
-                print(f"cheduler load error: {e}")
-                exit()
-            
-            # Create pipeline with all components
-            pipe = FluxPipeline(
-                transformer=transformer,
-                text_encoder=text_encoder,
-                text_encoder_2=text_encoder_2,
-                vae=vae,
-                tokenizer=tokenizer,
-                tokenizer_2=tokenizer_2,
-                scheduler=scheduler,
-            )
-            pipe.transformer = transformer
-            pipe.to(device)
-            
-            return (pipe, transformer)
-            
-        except Exception as e:
-            print(f"Error loading Flux model components: {e}")
-            raise e
+        pipe = FluxPipeline.from_pretrained(base_path, torch_dtype=torch.bfloat16, device=device)
+        transformer = FluxTransformer2DModel.from_pretrained(
+            base_path, 
+            subfolder="transformer",
+            torch_dtype=torch.bfloat16, 
+            device=device
+        )
+        pipe.transformer = transformer
+        pipe.to(device)
+        
+        return (pipe, transformer)
 
 class EasyControlLoadLora:
     @classmethod
@@ -248,7 +167,7 @@ class EasyControlGenerate:
         
         return (image,)
 
-
+# 注册节点
 NODE_CLASS_MAPPINGS = {
     "EasyControlLoadFlux": EasyControlLoadFlux,
     "EasyControlLoadLora": EasyControlLoadLora,
@@ -257,7 +176,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyControlLoadFlux": "Load EasyControl Flux with Components",
+    "EasyControlLoadFlux": "Load EasyControl Flux Model",
     "EasyControlLoadLora": "Load EasyControl Lora",
     "EasyControlLoadMultiLora": "Load Multiple EasyControl Loras",
     "EasyControlGenerate": "EasyControl Generate",
