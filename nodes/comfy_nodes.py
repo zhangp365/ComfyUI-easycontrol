@@ -1,8 +1,12 @@
 import os
+import sys
 import torch
 import folder_paths
 from PIL import Image
 import numpy as np
+
+# Add the parent directory to the Python path so we can import from easycontrol
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from diffusers.pipelines.flux.pipeline_output import FluxPipelineOutput
 from easycontrol.pipeline import FluxPipeline
