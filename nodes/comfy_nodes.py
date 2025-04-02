@@ -12,19 +12,22 @@ from diffusers.pipelines.flux.pipeline_output import FluxPipelineOutput
 from easycontrol.pipeline import FluxPipeline
 from easycontrol.transformer_flux import FluxTransformer2DModel
 from easycontrol.lora_helper import set_single_lora, set_multi_lora, unset_lora
+from huggingface_hub import login
+
 
 class EasyControlLoadFlux:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-
+            "hf_token": ("STRING", {"default": "", "multiline": True}),
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self):
+    def load_model(self, hf_token):
+        login(token=hf_token)
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         
