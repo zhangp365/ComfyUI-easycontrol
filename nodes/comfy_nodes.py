@@ -19,7 +19,9 @@ class EasyControlLoadFlux:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "hf_token": ("STRING", {"default": "", "multiline": True}),
+            "required": {
+                "hf_token": ("STRING", {"default": "", "multiline": True}),
+            },
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
