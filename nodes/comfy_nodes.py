@@ -32,13 +32,14 @@ class EasyControlLoadFlux:
         login(token=hf_token)
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        
+        cache_dir = folder_paths.folder_names_and_paths["diffusers"]
         pipe = FluxPipeline.from_pretrained(base_path, torch_dtype=torch.bfloat16, device=device)
         transformer = FluxTransformer2DModel.from_pretrained(
             base_path, 
             subfolder="transformer",
             torch_dtype=torch.bfloat16, 
-            device=device
+            device=device,
+            cache_dir=cache_dir
         )
         pipe.transformer = transformer
         pipe.to(device)
@@ -51,7 +52,7 @@ class EasyControlLoadLora:
         return {
             "required": {
                 "transformer": ("EASYCONTROL_TRANSFORMER", ),
-                "lora_name": (folder_paths.get_filename_list("loras"), ),
+                "lora_name": (folder_paths.get_filename_list("loras") ),
                 "lora_weight": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.01}),
                 "cond_size": ("INT", {"default": 512, "min": 256, "max": 1024, "step": 64}),
             },
