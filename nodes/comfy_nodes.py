@@ -14,6 +14,11 @@ from easycontrol.transformer_flux import FluxTransformer2DModel
 from easycontrol.lora_helper import set_single_lora, set_multi_lora, unset_lora
 from huggingface_hub import login
 
+from diffusers import BitsAndBytesConfig as DiffusersBitsAndBytesConfig
+from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
+
+from transformers import T5EncoderModel
+
 
 class EasyControlLoadFlux:
     @classmethod
@@ -22,28 +27,47 @@ class EasyControlLoadFlux:
             "required": {
                 "hf_token": ("STRING", {"default": "", "multiline": True}),
             },
+            "optional": {"load_8bit": ("BOOLEAN", {"default": True}), "cpu_offload": ("BOOLEAN", {"default": True})}
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, hf_token):
+    def load_model(self, load_8bit, cpu_offload, hf_token=None):
         login(token=hf_token)
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         cache_dir = folder_paths.get_folder_paths("diffusers")[0]
         print(cache_dir)
-        pipe = FluxPipeline.from_pretrained(base_path, torch_dtype=torch.bfloat16, device=device, cache_dir=cache_dir)
+        if load_8bit:
+            quant_config_t5 = TransformersBitsAndBytesConfig(load_in_8bit=True,)
+            quant_config = DiffusersBitsAndBytesConfig(load_in_8bit=True,)
+        else:
+            quant_config_t5 = None
+            quant_config = None
+            
+        text_encoder_2 = T5EncoderModel.from_pretrained(
+            base_path,
+            subfolder="text_encoder_2",
+            quantization_config=quant_config_t5,
+            torch_dtype=torch.bfloat16,
+        )
         transformer = FluxTransformer2DModel.from_pretrained(
             base_path, 
             subfolder="transformer",
             torch_dtype=torch.bfloat16, 
             device=device,
-            cache_dir=cache_dir
+            cache_dir=cache_dir,
+            quantization_config=quant_config,
         )
-        pipe.transformer = transformer
-        pipe.to(device)
+        
+        pipe = FluxPipeline.from_pretrained(base_path, transformer=transformer, text_encoder_2=text_encoder_2, torch_dtype=torch.bfloat16, device=device, cache_dir=cache_dir)
+        
+        if cpu_offload:
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to(device)
         
         return (pipe, transformer)
 
