@@ -21,16 +21,20 @@ class EasyControlLoadFlux:
         return {
             "required": {
                 "hf_token": ("STRING", {"default": "", "multiline": True}),
+                "model_name": (["FLUX.1-dev", "FLUX.1-schnell"], {"default":"FLUX.1-schnell"}),
             },
+            "optional": {
+                "fp8": ("BOOLEAN", {"default": False}),
+            }
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, hf_token):
+    def load_model(self, hf_token, model_name, fp8=False):
         login(token=hf_token)
-        base_path = "black-forest-labs/FLUX.1-dev"
+        base_path = f"black-forest-labs/{model_name}"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         cache_dir = folder_paths.get_folder_paths("diffusers")[0]
         print(cache_dir)
@@ -42,6 +46,11 @@ class EasyControlLoadFlux:
             device=device,
             cache_dir=cache_dir
         )
+        if fp8:
+            from optimum.quanto import freeze, qfloat8, quantize
+            quantize(transformer, weights=qfloat8)
+            freeze(transformer)
+
         pipe.transformer = transformer
         pipe.to(device)
         
