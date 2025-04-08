@@ -7,7 +7,7 @@ ComfyUI EasyControl Nodes is a collection of nodes for ComfyUI that allows you t
 
 https://github.com/Xiaojiu-z/EasyControl comfyui
 
-need 40GB VRAM to run. (open 8 bit only 24GB)
+need 40GB VRAM to run. (open CPU offload only 24GB)
 
 autodownload flux model (need 50GB disk space)
 
@@ -21,6 +21,11 @@ https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
 
 # online run:
 
+online workflow run:
+[https://www.comfyonline.app/explore/6cd58cc5-5d17-4ad8-9e10-91681085902c](https://www.comfyonline.app/explore/6cd58cc5-5d17-4ad8-9e10-91681085902c)
+
+
+online app run:
 [https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate](https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate)
 
 
