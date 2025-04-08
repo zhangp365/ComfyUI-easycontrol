@@ -138,6 +138,8 @@ class EasyControlGenerate:
                 "num_inference_steps": ("INT", {"default": 25, "min": 1, "max": 100, "step": 1}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "cond_size": ("INT", {"default": 512, "min": 256, "max": 1024, "step": 64}),
+                "use_zero_init": ("BOOLEAN", {"default": True}),
+                "zero_steps": ("INT", {"default": 1, "min": 0, "max": 100}),
             },
             "optional": {
                 "spatial_image": ("IMAGE", ),
@@ -150,7 +152,7 @@ class EasyControlGenerate:
     CATEGORY = "EasyControl"
 
     def generate(self, pipe, transformer, prompt, prompt_2, height, width, guidance_scale, 
-                num_inference_steps, seed, cond_size, spatial_image=None, subject_image=None):
+                num_inference_steps, seed, cond_size, use_zero_init, zero_steps, spatial_image=None, subject_image=None):
         # Clear cache before generation
         for name, attn_processor in transformer.attn_processors.items():
             attn_processor.bank_kv.clear()
@@ -220,6 +222,8 @@ class EasyControlGenerate:
             spatial_images=spatial_images,
             subject_images=subject_images,
             cond_size=cond_size,
+            use_zero_init=use_zero_init,
+            zero_steps=int(zero_steps)
         )
         
         # Convert PIL image to numpy array, then to torch.Tensor
