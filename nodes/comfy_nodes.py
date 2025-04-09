@@ -52,6 +52,7 @@ class EasyControlLoadFlux:
             subfolder="text_encoder_2",
             quantization_config=quant_config_t5,
             torch_dtype=torch.bfloat16,
+            cache_dir=cache_dir,
         )
         transformer = FluxTransformer2DModel.from_pretrained(
             base_path, 
