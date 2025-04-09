@@ -23,7 +23,7 @@ https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
 
 Migrate subjects
 
-![show](https://cdn.comfyonline.app/explore_128.mp4)
+![show](./asset/show_2.png)
 
 # online run:
 
