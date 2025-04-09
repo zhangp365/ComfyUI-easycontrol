@@ -19,14 +19,25 @@ https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
 
 ![show](./asset/show.png)
 
+
+
+Migrate subjects
+
+![show](https://cdn.comfyonline.app/explore_128.mp4)
+
 # online run:
 
-online workflow run:
+
+ghibli online workflow run:
 [https://www.comfyonline.app/explore/6cd58cc5-5d17-4ad8-9e10-91681085902c](https://www.comfyonline.app/explore/6cd58cc5-5d17-4ad8-9e10-91681085902c)
 
 
-online app run:
+ghibli online app run:
 [https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate](https://www.comfyonline.app/explore/app/gpt-ghibli-style-image-generate)
+
+
+Migrate subjects online workflow run:
+[https://www.comfyonline.app/explore/02c7d12b-19f5-46e4-af3d-b8110fff0c81](https://www.comfyonline.app/explore/02c7d12b-19f5-46e4-af3d-b8110fff0c81)
 
 
 
