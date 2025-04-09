@@ -23,7 +23,7 @@ https://huggingface.co/Xiaojiu-Z/EasyControl/tree/main/models
 
 Migrate subjects
 
-![show](./asset/show_2.png)
+![show](./asset/show_2.webp)
 
 # online run:
 
