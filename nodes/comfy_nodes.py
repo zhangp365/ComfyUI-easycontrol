@@ -127,7 +127,7 @@ class EasyControlLoadStyleLora:
         pipe.load_lora_weights(lora_path, weight_name=weight_name)
         
         # Fuse LoRA
-        pipe.fuse_lora(lora_weights=[lora_weight])        
+        # pipe.fuse_lora(lora_weights=[lora_weight])        
         return (pipe,)
 
 
