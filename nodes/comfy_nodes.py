@@ -122,9 +122,12 @@ class EasyControlLoadStyleLora:
         # If weight_name is empty, use lora_name as weight_name
         if not weight_name:
             weight_name = lora_name
-            
+
+        # handle offload
+        device = next(pipe.transformer.parameters()).device
+
         # Load LoRA weights
-        pipe.load_lora_weights(lora_path, weight_name=weight_name)
+        pipe.load_lora_weights(lora_path, weight_name=weight_name, device=device)
         
         # Fuse LoRA
         # pipe.fuse_lora(lora_weights=[lora_weight])        
