@@ -92,6 +92,43 @@ class EasyControlLoadLora:
         lora_path = folder_paths.get_full_path("loras", lora_name)
         set_single_lora(transformer, lora_path, lora_weights=[lora_weight], cond_size=cond_size)
         return (transformer,)
+    
+# New Node: FLUX Style LoRA Loader
+class EasyControlLoadStyleLora:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "pipe": ("EASYCONTROL_PIPE",),
+                "lora_name": (folder_paths.get_filename_list("loras"),),
+                "lora_weight": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
+            },
+            "optional": {
+                "weight_name": ("STRING", {"default": ""})
+            }
+        }
+    
+    RETURN_TYPES = ("EASYCONTROL_PIPE",)
+    FUNCTION = "load_lora"
+    CATEGORY = "EasyControl"
+
+    def load_lora(self, pipe, lora_name, lora_weight, weight_name=""):
+        # Get the full path of the LoRA file
+        lora_path = folder_paths.get_full_path("loras", lora_name)
+        
+        # Load LoRA weights
+        print(f"Loading FLUX Style LoRA: {lora_name}, Weight: {lora_weight}")
+        
+        # If weight_name is empty, use lora_name as weight_name
+        if not weight_name:
+            weight_name = lora_name
+            
+        # Load LoRA weights
+        pipe.load_lora_weights(lora_path, weight_name=weight_name)
+        
+        # Fuse LoRA
+        pipe.fuse_lora(lora_weights=[lora_weight])        
+        return (pipe,)
 
 
 class EasyControlLoadMultiLora:
