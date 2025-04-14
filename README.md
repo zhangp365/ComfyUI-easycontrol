@@ -25,6 +25,10 @@ Migrate subjects
 
 ![show](./asset/show_2.webp)
 
+
+Style Photo
+![show](./asset/show_3.jpg)
+
 # online run:
 
 
@@ -38,6 +42,10 @@ ghibli online app run:
 
 Migrate subjects online workflow run:
 [https://www.comfyonline.app/explore/02c7d12b-19f5-46e4-af3d-b8110fff0c81](https://www.comfyonline.app/explore/02c7d12b-19f5-46e4-af3d-b8110fff0c81)
+
+
+style_photo online workflow run:
+[https://www.comfyonline.app/explore/125c295f-2f1f-4fbc-a1c8-b66c9b1265a3](https://www.comfyonline.app/explore/125c295f-2f1f-4fbc-a1c8-b66c9b1265a3)
 
 
 
