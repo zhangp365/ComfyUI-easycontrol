@@ -147,44 +147,38 @@ class EasyControlLoadStyleLoraFromCivitai:
     CATEGORY = "EasyControl"
 
     def load_lora(self, pipe, lora_weight, civitai_model_id):
-        
         civitai_token_id = os.getenv("CIVITAI_TOKEN", "").strip()
         if not civitai_token_id:
             raise RuntimeError("CIVITAI_TOKEN environment variable is not set or empty.")
         
         loras_dir = folder_paths.get_folder_paths("loras")[0]
-
-        lora_filename = f"tmp_{civitai_model_id or 'downloaded_lora'}.safetensors"  # 生成临时文件名
+        
+        # Generate temporary filename for downloaded LoRA
+        lora_filename = f"tmp_{civitai_model_id or 'downloaded_lora'}.safetensors"
         lora_path = os.path.join(loras_dir, lora_filename)
         
-        file_exists = os.path.exists(lora_path)
-        if not file_exists:
-            self.download_from_civitai(civitai_model_id, civitai_token_id, lora_path)
-        else:
-            print(f"LoRA file already exists at {lora_path}, skipping download")
+        try:
+            file_exists = os.path.exists(lora_path)
+            if not file_exists:
+                self.download_from_civitai(civitai_model_id, civitai_token_id, lora_path)
+            else:
+                print(f"LoRA file already exists at {lora_path}, skipping download")
 
-        
-        # Load LoRA weights
-        print(f"Loading FLUX Style LoRA: {lora_filename}, Weight: {lora_weight}")
-        
-        weight_name = lora_filename
-
-        # handle offload
-        device = next(pipe.transformer.parameters()).device
-
-        # Load LoRA weights
-        pipe.load_lora_weights(lora_path, weight_name=weight_name, device=device)
-        
-        # Fuse LoRA
-        # pipe.fuse_lora(lora_weights=[lora_weight])        
-        return (pipe,)
+            # Load LoRA weights
+            print(f"Loading FLUX Style LoRA: {lora_filename}, Weight: {lora_weight}")
+            
+            device = next(pipe.transformer.parameters()).device
+            pipe.load_lora_weights(lora_path, weight_name=lora_filename, device=device)
+            
+            return (pipe,)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load or download LoRA: {str(e)}")
     
     def download_from_civitai(self, model_id, token_id, lora_path):
         print("Downloading LoRA from CivitAI")
         print(f"\tModel ID: {model_id}")
         print(f"\tToken ID: {token_id}")
         print(f"\tSave path: {lora_path}")
-        # 实现下载逻辑
         download_cai(model_id, token_id, lora_path)
 
 
