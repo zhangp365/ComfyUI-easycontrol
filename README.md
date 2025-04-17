@@ -29,6 +29,10 @@ Migrate subjects
 Style Photo
 ![show](./asset/show_3.jpg)
 
+
+mutil view
+![show](./asset/show_4.png)
+
 # online run:
 
 
@@ -47,7 +51,8 @@ Migrate subjects online workflow run:
 style_photo online workflow run:
 [https://www.comfyonline.app/explore/125c295f-2f1f-4fbc-a1c8-b66c9b1265a3](https://www.comfyonline.app/explore/125c295f-2f1f-4fbc-a1c8-b66c9b1265a3)
 
-
+mutil view online workflow run:
+[https://www.comfyonline.app/explore/ad7f29a1-af00-4367-b211-0b1f23254e3b](https://www.comfyonline.app/explore/ad7f29a1-af00-4367-b211-0b1f23254e3b)
 
 
 https://www.comfyonline.app
