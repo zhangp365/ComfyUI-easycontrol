@@ -19,7 +19,7 @@ from huggingface_hub import login
 from diffusers import BitsAndBytesConfig as DiffusersBitsAndBytesConfig
 from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
 
-from transformers import T5EncoderModel
+from transformers import T5EncoderModel, CLIPTextModel
 
 
 class EasyControlLoadFlux:
@@ -29,14 +29,15 @@ class EasyControlLoadFlux:
             "required": {
                 "hf_token": ("STRING", {"default": "", "multiline": True}),
             },
-            "optional": {"load_8bit": ("BOOLEAN", {"default": True}), "cpu_offload": ("BOOLEAN", {"default": True})}
+            "optional": {"load_8bit": ("BOOLEAN", {"default": True}), "cpu_offload": ("BOOLEAN", {"default": True}),
+                         "load_t5": ("BOOLEAN", {"default": True})}
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, load_8bit, cpu_offload, hf_token=None):
+    def load_model(self, load_8bit, cpu_offload, load_t5=True, hf_token=None):
         login(token=hf_token)
         base_path = "black-forest-labs/FLUX.1-dev"
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -48,14 +49,24 @@ class EasyControlLoadFlux:
         else:
             quant_config_t5 = None
             quant_config = None
-            
-        text_encoder_2 = T5EncoderModel.from_pretrained(
-            base_path,
-            subfolder="text_encoder_2",
-            quantization_config=quant_config_t5,
-            torch_dtype=torch.bfloat16,
-            cache_dir=cache_dir,
-        )
+        if load_t5:
+            text_encoder = CLIPTextModel.from_pretrained(
+                base_path,
+                subfolder="text_encoder",
+                quantization_config=quant_config_t5,
+                torch_dtype=torch.bfloat16,
+                cache_dir=cache_dir,
+            )
+            text_encoder_2 = T5EncoderModel.from_pretrained(
+                base_path,
+                subfolder="text_encoder_2",
+                quantization_config=quant_config_t5,
+                torch_dtype=torch.bfloat16,
+                cache_dir=cache_dir,
+            )
+        else:
+            text_encoder, text_encoder_2 = None, None
+
         transformer = FluxTransformer2DModel.from_pretrained(
             base_path, 
             subfolder="transformer",
@@ -65,7 +76,7 @@ class EasyControlLoadFlux:
             quantization_config=quant_config,
         )
         
-        pipe = FluxPipeline.from_pretrained(base_path, transformer=transformer, text_encoder_2=text_encoder_2, torch_dtype=torch.bfloat16, device=device, cache_dir=cache_dir)
+        pipe = FluxPipeline.from_pretrained(base_path, transformer=transformer, text_encoder=text_encoder, text_encoder_2=text_encoder_2, torch_dtype=torch.bfloat16, device=device, cache_dir=cache_dir)
         
         if cpu_offload:
             pipe.enable_sequential_cpu_offload()
@@ -233,6 +244,7 @@ class EasyControlGenerate:
             "optional": {
                 "spatial_image": ("IMAGE", ),
                 "subject_image": ("IMAGE", ),
+                "positive": ("CONDITIONING", ),
             }
         }
     
@@ -241,7 +253,7 @@ class EasyControlGenerate:
     CATEGORY = "EasyControl"
 
     def generate(self, pipe, transformer, prompt, prompt_2, height, width, guidance_scale, 
-                num_inference_steps, seed, cond_size, use_zero_init, zero_steps, spatial_image=None, subject_image=None):
+                num_inference_steps, seed, cond_size, use_zero_init, zero_steps, spatial_image=None, subject_image=None, positive=None):
         # Clear cache before generation
         for name, attn_processor in transformer.attn_processors.items():
             attn_processor.bank_kv.clear()
@@ -288,6 +300,13 @@ class EasyControlGenerate:
                 subject_image_pil = Image.fromarray((subject_image * 255).astype(np.uint8))
                 subject_images.append(subject_image_pil)
         
+        if positive is not None:
+            prompt_embeds = positive[0][0].to("cuda",torch.bfloat16)
+            pooled_prompt_embeds = positive[0][1]["pooled_output"].to("cuda",torch.bfloat16)
+            prompt, prompt_2 = None, None
+        else:
+            prompt_embeds, pooled_prompt_embeds = None, None
+
         # Set prompt_2 to None if empty
         if not prompt_2:
             prompt_2 = None
@@ -302,6 +321,8 @@ class EasyControlGenerate:
         output = pipe(
             prompt=prompt,
             prompt_2=prompt_2,
+            prompt_embeds=prompt_embeds,
+            pooled_prompt_embeds=pooled_prompt_embeds,
             height=height,
             width=width,
             guidance_scale=guidance_scale,
