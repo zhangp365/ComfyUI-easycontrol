@@ -53,7 +53,6 @@ class EasyControlLoadFlux:
             text_encoder = CLIPTextModel.from_pretrained(
                 base_path,
                 subfolder="text_encoder",
-                quantization_config=quant_config_t5,
                 torch_dtype=torch.bfloat16,
                 cache_dir=cache_dir,
             )
