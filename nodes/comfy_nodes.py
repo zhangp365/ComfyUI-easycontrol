@@ -30,16 +30,16 @@ class EasyControlLoadFlux:
                 "hf_token": ("STRING", {"default": "", "multiline": True}),
             },
             "optional": {"load_8bit": ("BOOLEAN", {"default": True}), "cpu_offload": ("BOOLEAN", {"default": True}),
-                         "load_t5": ("BOOLEAN", {"default": True})}
+                         "load_t5": ("BOOLEAN", {"default": True}), "model_name": (["FLUX.1-dev", "FLUX.1-schnell"], {"default": "FLUX.1-dev"})}
         }
     
     RETURN_TYPES = ("EASYCONTROL_PIPE", "EASYCONTROL_TRANSFORMER")
     FUNCTION = "load_model"
     CATEGORY = "EasyControl"
 
-    def load_model(self, load_8bit, cpu_offload, load_t5=True, hf_token=None):
+    def load_model(self, load_8bit, cpu_offload, load_t5=True, model_name="FLUX.1-dev", hf_token=None):
         login(token=hf_token)
-        base_path = "black-forest-labs/FLUX.1-dev"
+        base_path = f"black-forest-labs/{model_name}"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         cache_dir = folder_paths.get_folder_paths("diffusers")[0]
         print(cache_dir)
@@ -260,8 +260,6 @@ class EasyControlGenerate:
         
         # Prepare spatial images
         spatial_images = []
-        print("spatial_image")
-        print(spatial_image)
         
         if spatial_image is not None:
             # Convert from tensor or numpy to PIL
@@ -310,11 +308,8 @@ class EasyControlGenerate:
         if not prompt_2:
             prompt_2 = None
 
-        print("spatial_images")
-        print(spatial_images)
-
-        print("subject_images")
-        print(subject_images)
+        print(f"spatial_images: {spatial_images}")
+        print(f"subject_images: {subject_images}")
         
         # Generate image
         output = pipe(
